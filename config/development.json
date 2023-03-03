@@ -1,0 +1,8 @@
+{
+    "name": "My Express App - Development",
+    "db": {
+        "host": "localhost",
+        "user": "root",
+        "database": "student"
+    }
+}
