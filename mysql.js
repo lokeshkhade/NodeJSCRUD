@@ -7,7 +7,7 @@ var config = require('config');
 
 var exec = function (query, params, callback) {
   if (!query) {
-    callback("Query not found");
+    return callback("Query not found");
   }
   var connection = mysql.createConnection({
     host: config.get('db.host'),
@@ -20,17 +20,18 @@ var exec = function (query, params, callback) {
 
   connection.connect(function (err) {
     if (err) {
-      callback(err);
-      return;
+      return callback(err);
+
+
     }
 
     var q = connection.query(query, params, function (err, results) {
       connection.end();
-      if (err) {  callback(err); return; }
+      if (err) { return callback(err); }
       return callback(null, results);
     });
 
-    connection.end();
+
 
   });
 };
