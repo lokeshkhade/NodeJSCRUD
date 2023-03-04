@@ -6,13 +6,14 @@ var mysql = require('../mysql');
 
 router.get('/:id', (req, res) => {
 
-    var query = "SELECT * FROM courses WHER id = ?";
+    var query = "SELECT * FROM courses WHERE id = ?";
+    //var query = "";
     var id = req.params.id;
 
     mysql.exec(query, [id], function (err, result) {
-        if (err) return res.status(404).json(err) ;
-        if(result.length==0){
-           return res.status(404).send("Course Not Found");
+        if (err) return res.status(404).json(err);
+        if (result.length == 0) {
+            return res.status(404).send("Course Not Found");
         }
         return res.json(result);
     });
@@ -31,7 +32,7 @@ router.post('/', (req, res) => {
         if (err) { if (err) res.status(404).send('error'); return; };
 
         if (data.affectedRows < 1) {
-                       res.status(404).send('error'); return;
+            res.status(404).send('error'); return;
         }
         res.json({
             id: data.insertId
@@ -44,7 +45,7 @@ router.post('/', (req, res) => {
 
 
 router.put('/:id', (req, res) => {
-   
+
 
     //Validate Course
 
@@ -55,34 +56,34 @@ router.put('/:id', (req, res) => {
     }
     var id = req.params.id;
     var values = req.body;
-    var query   = "UPDATE courses SET ? WHERE id = ? ";
+    var query = "UPDATE courses SET ? WHERE id = ? ";
 
     // Return Query Status
     mysql.exec(query, [values, id], function (err, data) {
-        if (err) { if (err) res.status(404).send('error'); return; };
-      if (data.affectedRows < 1) {
-        res.status(404).send('error'); return;
-      }
-      res.json( {success: true });
-    });  
-    
+        if (err) { if (err) return res.status(404).send('error'); };
+        if (data.affectedRows < 1) {
+            return res.status(404).send('error');
+        }
+        res.json({ success: "Data" });
+    });
+
 });
 
 
 
 router.delete('/:id', (req, res) => {
-  
+
     var id = req.params.id;
     var query = "DELETE FROM courses WHERE id = ?";
     mysql.exec(query, [id], function (err, data) {
         if (err) { if (err) res.status(404).send('error'); return; };
-      if (data.affectedRows < 1) {
-       
-        res.status(404).send('error'); return;
-      }
-      res.json( {success: true });
-    });  
- 
+        if (data.affectedRows < 1) {
+
+            res.status(404).send('error'); return;
+        }
+        res.json({ success: true });
+    });
+
 });
 
 
