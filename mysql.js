@@ -5,32 +5,39 @@ var config = require('config');
 
 
 
-var exec = function (query, params, callback) {
-  if (!query) {
-    return callback("Query not found");
-  }
-  var connection = mysql.createConnection({
-    host: config.get('db.host'),
-    user: config.get('db.user'),
-    password: config.get('db.password'),
-    database: config.get('db.database'),
+var exec = function (query, params) {
+  return new Promise((resolve, reject) => {
 
-    multipleStatements: true
-  });
+    if (!query) {
 
-  connection.connect(function (err) {
-    if (err) {
-      return callback(err);
-
-
+      return reject("Query not found");
     }
+    console.log('1');
+    var connection = mysql.createConnection({
+      host: config.get('db.host'),
+      user: config.get('db.user'),
+      password: config.get('db.password'),
+      database: config.get('db.database'),
 
-    var q = connection.query(query, params, function (err, results) {
-      connection.end();
-      if (err) { return callback(err); }
-      return callback(null, results);
+      multipleStatements: true
     });
 
+    connection.connect(function (err) {
+
+      if (err) {
+
+        return reject(err);
+
+
+      }
+
+      var q = connection.query(query, params, function (err, results) {
+
+        connection.end();
+        if (err) { return reject(err); }
+        return resolve(results);
+      });
+    });
 
 
   });

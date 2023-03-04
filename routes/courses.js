@@ -4,19 +4,35 @@ const Joi = require('joi');//joi module return a Class and By covention class na
 var mysql = require('../mysql');
 
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
 
     var query = "SELECT * FROM courses WHERE id = ?";
     //var query = "";
     var id = req.params.id;
 
-    mysql.exec(query, [id], function (err, result) {
-        if (err) return res.status(404).json(err);
+    try {
+        let result = await mysql.exec(query, [id]);
         if (result.length == 0) {
             return res.status(404).send("Course Not Found");
         }
         return res.json(result);
-    });
+    } catch (err) {
+
+        return res.status(404).json(err);
+    }
+
+
+
+
+
+
+    // mysql.exec(query, [id], function (err, result) {
+    //     if (err) return res.status(404).json(err);
+    //     if (result.length == 0) {
+    //         return res.status(404).send("Course Not Found");
+    //     }
+    //     return res.json(result);
+    // });
 
 });
 
