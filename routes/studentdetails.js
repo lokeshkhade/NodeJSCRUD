@@ -4,9 +4,10 @@ const Joi = require('joi');//joi module return a Class and By covention class na
 var mysql = require('../mysql');
 
 
-router.get('/getCourses', async (req, res) => {
+router.get('/getStudentDetails', async (req, res) => {
 
-    var query = "SELECT * FROM courses";
+    //var query = "SELECT * FROM studentdetails";
+    var query = `SELECT s.student_id,s.student_name,s.dob,c.name AS course_name,s.mobile_no FROM studentdetails s INNER JOIN courses c ON s.course_id=c.id`
 
     try {
         let result = await mysql.exec(query);
@@ -20,10 +21,10 @@ router.get('/getCourses', async (req, res) => {
     }
 });
 
-router.get('/getCourseById/:id', async (req, res) => {
+router.get('/getStudentDetailsById/:id', async (req, res) => {
     var id = req.params.id;
     if (id === null)
-        var query = "SELECT * FROM courses WHERE id = ?";
+        var query = "SELECT * FROM studentdetails WHERE id = ?";
 
     try {
         let result = await mysql.exec(query, [id]);
@@ -43,18 +44,18 @@ router.get('/getCourseById/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
     console.log(req.body);
-    const { error } = validateCourse(req.body);
+    const { error } = validateStudentDetails(req.body);
     if (error) {
         res.status(404).send(error.details[0].message);
     }
     var values = req.body;
-    var query = "INSERT INTO courses SET ? ";
+    var query = "INSERT INTO studentdetails SET ? ";
 
     try {
 
         let data = await mysql.exec(query, values);
         res.json({
-            id: data.insertId
+            student_id: data.insertId
 
         });
     } catch (err) {
@@ -110,11 +111,14 @@ router.delete('/:id', (req, res) => {
 });
 
 
-function validateCourse(course) {
+function validateStudentDetails(studentdetails) {
     const schema = Joi.object({
-        name: Joi.string().min(3).required()
+        student_name: Joi.string().min(3).required(),
+        dob: Joi.date().required(),
+        course_id: Joi.number().required(),
+        mobile_no: Joi.number().min(10).required()
     });
-    return schema.validate(course);
+    return schema.validate(studentdetails);
 
 }
 
