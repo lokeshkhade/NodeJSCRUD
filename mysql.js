@@ -1,43 +1,35 @@
-
 var mysql = require('mysql');
 var config = require('config');
 
 
 
 
-var exec = function (query, params) {
-  return new Promise((resolve, reject) => {
+var exec = function (query, params, callback) {
+  if (!query) {
+    return callback("Query not found");
+  }
+  var connection = mysql.createConnection({
+    host: config.get('db.host'),
+    user: config.get('db.user'),
+    password: config.get('db.password'),
+    database: config.get('db.database'),
 
-    if (!query) {
+    multipleStatements: true
+  });
 
-      return reject("Query not found");
+  connection.connect(function (err) {
+    if (err) {
+      return callback(err);
+
+
     }
-    console.log('1');
-    var connection = mysql.createConnection({
-      host: config.get('db.host'),
-      user: config.get('db.user'),
-      password: config.get('db.password'),
-      database: config.get('db.database'),
 
-      multipleStatements: true
+    var q = connection.query(query, params, function (err, results) {
+      connection.end();
+      if (err) { return callback(err); }
+      return callback(null, results);
     });
 
-    connection.connect(function (err) {
-
-      if (err) {
-
-        return reject(err);
-
-
-      }
-
-      var q = connection.query(query, params, function (err, results) {
-
-        connection.end();
-        if (err) { return reject(err); }
-        return resolve(results);
-      });
-    });
 
 
   });

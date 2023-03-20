@@ -2,13 +2,15 @@ const startupDebugger = require('debug')('app:startup');
 const dbDebugger = require('debug')('app:db');
 var config = require('config');
 var morgan = require('morgan');
-
+var cors = require('cors');
+const courses = require('./routes/courses');
+const home = require('./routes/home');
 const express = require('express'); //Load express moudule which returns a function express
 const app = express(); //express fucntion retuns object of type express,by convention we call the object as app.app object support varios method get,post,put
 
 
-const courses = require('./routes/courses');
-const home = require('./routes/home');
+app.use(cors());
+
 
 console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
 //In production we set NODE_ENV=production
@@ -59,13 +61,12 @@ dbDebugger('Connected to database')
 //Sattic is used to serve static data. To acess locahost:5000/readme.txt
 app.use(express.static('public'));  //public is name of folder
 //Coustom Middlware
-app.use(logger);
+// app.use(logger);
 
-
-app.use(function (req, res, next) {
-    console.log("Authenticating");
-    next();
-});
+// app.use(function (req, res, next) {
+//     console.log("Authenticating");
+//     next();
+// });
 
 app.use('/', home);
 app.use('/api/courses', courses);
