@@ -2,6 +2,7 @@ const startupDebugger = require('debug')('app:startup');
 const dbDebugger = require('debug')('app:db');
 var config = require('config');
 var morgan = require('morgan');
+var svgCaptcha = require('svg-captcha');
 var cors = require('cors');
 const express = require('express'); //Load express moudule which returns a function express
 const app = express(); //express fucntion retuns object of type express,by convention we call the object as app.app object support varios method get,post,put
@@ -10,7 +11,9 @@ app.use(cors());
 const courses = require('./routes/courses');
 const home = require('./routes/home');
 const studentdetails = require('./routes/studentdetails');
+const user = require('./routes/user');
 console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`NODE_ENV: ${process.env.DEBUG}`);
 //In production we set NODE_ENV=production
 console.log(`app: ${app.get('env')}`);
 
@@ -46,7 +49,8 @@ if (app.get('env') === 'development') {
 
 }
 //Db logic
-dbDebugger('Connected to database')
+dbDebugger('Connected to database');
+console.log('Connected to database');
 
 
 
@@ -70,7 +74,15 @@ app.use(function (req, res, next) {
 app.use('/', home);
 app.use('/api/courses', courses);
 app.use('/api/studentdetails', studentdetails);
-
+app.use('/api/user', user);
+app.get('/api/captcha', function (req, res) {
+    var captcha = svgCaptcha.create({ ignoreChars: 'lI0Oo' });
+    // req.session.captcha = captcha.text;
+    res.json(captcha);
+    // var captcha = svgCaptcha.create({ ignoreChars: 'lI' });
+    // captcha.text = CryptoJS.AES.encrypt(JSON.stringify(captcha.text), 'svgcaptcha_key').toString();
+    // res.json(captcha);
+});
 
 
 const port = process.env.PORT || 3000;

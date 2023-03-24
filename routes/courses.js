@@ -113,7 +113,7 @@ router.delete('/:id', (req, res) => {
 function validateCourse(course) {
     const schema = Joi.object({
         name: Joi.string().min(3).required()
-    });
+    }).unknown(true);
     return schema.validate(course);
 
 }
