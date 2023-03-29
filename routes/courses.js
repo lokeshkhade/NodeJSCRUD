@@ -2,22 +2,22 @@ const express = require('express'); //Load express moudule which returns a funct
 const router = express.Router();
 const Joi = require('joi');//joi module return a Class and By covention class name start with capital letter
 var mysql = require('../mysql');
+require('express-async-errors');
 
 
-router.get('/getCourses', async (req, res) => {
+const auth = require('../middleware/auth');
+
+
+router.get('/getCourses', auth, async (req, res) => {
+
 
     var query = "SELECT * FROM courses";
+    let result = await mysql.exec(query);
+    if (result.length == 0)
+        return res.status(404).send("Course Not Found");
 
-    try {
-        let result = await mysql.exec(query);
-        if (result.length == 0) {
-            return res.status(404).send("Course Not Found");
-        }
-        return res.json(result);
-    } catch (err) {
+    return res.json(result);
 
-        return res.status(404).json(err);
-    }
 });
 
 router.get('/getCourseById/:id', async (req, res) => {

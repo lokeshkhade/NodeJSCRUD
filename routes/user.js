@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const CryptoJS = require("crypto-js");
 
+var config = require('config');
+
 
 
 
@@ -13,7 +15,11 @@ router.post('/', async (req, res) => {
 
     const { error } = validateUser(req.body);
     if (error) {
-       return res.status(404).send(error.details[0].message);
+
+        return res.status(404).send(error.details[0].message);
+
+
+
     }
     var username = req.body.username;
     var password = req.body.password;
@@ -28,39 +34,44 @@ router.post('/', async (req, res) => {
         let passwordDncyt = CryptoJS.AES.decrypt(password, passwordKey).toString(CryptoJS.enc.Utf8);
         console.log('Decrpyt Pwd', passwordDncyt);
 
-        const validPassword = await bcrypt.compare(passwordDncyt, result[0].password) ;
-                       
-            if (!validPassword) {
-            
-                return res.status(400).send({
+
+        const validPassword = await bcrypt.compare(passwordDncyt, result[0].password);
+
+        if (!validPassword) {
+
+            return res.status(400).send({
+                success: 0,
+                message: `Wrong credential.`
+            });
+        }
+        else if (validPassword) {
+            let response =
+            {
+                username: username,
+            }
+            const token = jwt.sign(response, config.get('jwtPrivateKey'),
+                {
+                    expiresIn: '20s' // expires in 24 hours; expiresIn: '60s' expires in 24 hours
+                });
+            return res.json
+                ({
+                    token: token, success: 1, username: username,
+                    message: 'Login Success'
+                });
+        }
+        else {
+            return res.json
+                ({
                     success: 0,
                     message: `Wrong credential.`
                 });
-            }
-            else if (validPassword) {
-                let response =
-                {
-                    username: username,
-                }
-                const token = jwt.sign(response, 'SECreTIsAlwaYSSecRET',
-                    {
-                        expiresIn: '12h' // expires in 24 hours; expiresIn: '60s' expires in 24 hours
-                    });
-                return res.json
-                    ({
-                        token: token, success: 1, username: username,
-                        message: 'Login Success'
-                    });
-            }
-            else {
-                return res.json
-                    ({
-                        success: 0,
-                        message: `Wrong credential.`
-                    });
-            }
+        }
 
-        
+
+
+
+
+
     }
     catch (err) {
         console.log('errr');

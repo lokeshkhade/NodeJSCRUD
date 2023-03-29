@@ -17,6 +17,11 @@ console.log(`NODE_ENV: ${process.env.DEBUG}`);
 //In production we set NODE_ENV=production
 console.log(`app: ${app.get('env')}`);
 
+
+if (!config.get('jwtPrivateKey')) {
+    console.error('FATAL error jwtPrivate not defined');
+    process.exit(1);
+}
 const logger = require('./middleware/logger');
 
 //To enable parsing of JSON object in the body of request

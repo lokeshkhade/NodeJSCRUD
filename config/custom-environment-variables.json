@@ -1,5 +1,6 @@
 {
     "db": {
         "password": "db_password"
-    }
+    },
+    "jwtPrivateKey": "student_jwtPrivateKey"
 }

@@ -33,7 +33,7 @@ var exec = function (query, params) {
 
       var q = connection.query(query, params, function (err, results) {
 
-        connection.end();
+        //connection.end();
         if (err) { return reject(err); }
         return resolve(results);
       });
