@@ -30,6 +30,7 @@ router.post('/', async (req, res) => {
 
         let result = await mysql.exec(query, [username]);
         console.log(result[0].password);
+        var role=result[0].role;
         let passwordKey = '08t16e502526fesanfjh8nasd2';
         let passwordDncyt = CryptoJS.AES.decrypt(password, passwordKey).toString(CryptoJS.enc.Utf8);
         console.log('Decrpyt Pwd', passwordDncyt);
@@ -48,14 +49,15 @@ router.post('/', async (req, res) => {
             let response =
             {
                 username: username,
+                role :role
             }
             const token = jwt.sign(response, config.get('jwtPrivateKey'),
                 {
-                    expiresIn: '20s' // expires in 24 hours; expiresIn: '60s' expires in 24 hours
+                    expiresIn: '120s' // expires in 24 hours; expiresIn: '60s' expires in 24 hours
                 });
             return res.json
                 ({
-                    token: token, success: 1, username: username,
+                    token: token, success: 1, username: username, role :role,
                     message: 'Login Success'
                 });
         }
